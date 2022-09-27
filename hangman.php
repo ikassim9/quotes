@@ -3,6 +3,10 @@ define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
 const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman");
 
+// $correctQuote = quotes[array_rand(quotes)]; // gets random key and then searches for the value fo that key in the array_rand
+$correctQuote = "hungry";
+
+
 function createButtons()
 {
     $length = strlen(letters);
@@ -11,27 +15,67 @@ function createButtons()
         // this so to not put all letters in one line
         if ($i == 13) {
             echo "<br>";
-            echo "<button type='submit'>" . letters[$i] . "</button>";
+            echo "<button type='submit' name='letter-guess' value='" . letters[$i] . "'>" . letters[$i] . "</button>";
         } else {
-            echo "<button type='submit'>" . letters[$i] . "</button>";
+            echo "<button type='submit' name='letter-guess' value='" . letters[$i] . "'>" . letters[$i] . "</button>";
         }
     }
 }
 
-function createInputs()
+function createInputs($correctQuote)
 {
-    $random_key = array_rand(quotes);
-    $random_quote = quotes[$random_key];
-    $length = strlen($random_quote);
+    $length = strlen($correctQuote);
+    $correctQuoteArray = str_split($correctQuote);
+    $visibility = "hidden";
+
     for ($i = 0; $i < $length; $i++) {
         // this is so we have about 4 inputs max in each line
+        if(validateInputs($correctQuote) == null){
+            $visibility = "visible";
+            echo "<span><span style='visibility:$visibility'>" . "&nbsp;&nbsp" .$correctQuoteArray[$i] . "</span></span>";
+
+        }
+        else{
+            $visibility = "hidden";
+            echo "<span><span style='visibility:$visibility'>" . "&nbsp;&nbsp" .$correctQuoteArray[$i] . "</span></span>";
+        }
+     }
+}
+
+function getCurrentQuote()
+{
+}
+
+
+
+function validateInputs($correctQuote)
+{
+    $correctQuoteArray = str_split($correctQuote);
+    if(isset($_GET['letter-guess'])){
+    $guess_letter = $_GET['letter-guess'];
  
-            echo "<span>" .  $random_quote[$i] . "</span>";
-        
+
+   // echo "guess letter is " . $guess_letter;
+ 
+
+    if(in_array(strtolower($guess_letter), $correctQuoteArray)){
+     $index = array_search(strtolower($guess_letter), $correctQuoteArray);
+     return $guess_letter;
+     }
+     else{
+        return null;
+     }
+    
+
     }
 }
 
 
+
+    // get input from keyboard and check against the array
+
+
+ 
 
 ?>
 
@@ -48,28 +92,43 @@ function createInputs()
 
 <body>
 
-
-    <form action="hangman.php"></form>
-
-
+ 
+ 
     <div class="container">
 
+
+        <div class="hangman-container">
+
+            <div>
+                <img src="./css/images/hangman- full.png" alt="Hangman full">
+            </div>
+
+            <div>You Lose, try again laters</div>
+
+        </div>
+
+
         <div class="input-container">
+           
+
             <?php
 
 
-            createInputs();
+            createInputs($correctQuote);
 
             ?>
         </div>
 
 
         <div class="button-container">
-
+        <form action="hangman.php" method="get">
 
             <?php
-            createButtons()
+            createButtons();
+         
             ?>
+                </form>
+
         </div>
 
         <div class="stats-container">
@@ -84,7 +143,6 @@ function createInputs()
 
 
     </div>
-
 
 </body>
 
