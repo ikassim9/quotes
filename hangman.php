@@ -25,19 +25,27 @@ function createButtons()
 function createInputs($correctQuote)
 {
     $length = strlen($correctQuote);
-    $correctQuoteArray = str_split($correctQuote);
+    $correctQuoteArray = str_split($correctQuote); // 
     $visibility = "hidden";
 
     for ($i = 0; $i < $length; $i++) {
         // this is so we have about 4 inputs max in each line
-        if(validateInputs($correctQuote) == null){
+        $input = validateInputs($correctQuote);
+      //  echo "the index is " .in_array("u", $correctQuoteArray);
+      $index = array_search(strtolower($input ), $correctQuoteArray);
+      echo $index;
+      //  echo "index is " .$index;
+        if($input != null && $i == $index){
+          
+
+            // echo "<br>";
             $visibility = "visible";
-            echo "<span><span style='visibility:$visibility'>" . "&nbsp;&nbsp" .$correctQuoteArray[$i] . "</span></span>";
+              echo "<span><span style='visibility:$visibility'>" . "&nbsp;&nbsp" .$input . "</span></span>";
 
         }
         else{
             $visibility = "hidden";
-            echo "<span><span style='visibility:$visibility'>" . "&nbsp;&nbsp" .$correctQuoteArray[$i] . "</span></span>";
+             echo "<span><span style='visibility:$visibility'>" . "&nbsp;&nbsp" .$correctQuoteArray[$i] . "</span></span>";
         }
      }
 }
