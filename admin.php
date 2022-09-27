@@ -80,6 +80,7 @@ TO BO DONE: Add proper comments to the code
             <button type="submit" formaction="slider16.php">Slider16</button>
             <button type="submit" formaction="catchAphrase.php">Catch a Phrase(TBD)</button>
             <button type="submit" formaction="batch.php">Batch</button>
+            <button type=submit formaction="hangman.php">Hangman</button>
 
 
             <div id="quotesTableView">
