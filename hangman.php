@@ -40,15 +40,14 @@ function getCurrentQuote()
 
 
 // Updates the 'test' array and guesses.
-function validateInputs($correctQuote)
+function validateInputs()
 {
-    $correctQuoteArray = str_split($correctQuote);
     if(isset($_GET['letter-guess'])){ // If letter guess is set.
 
         $guess_letter = strtolower($_GET['letter-guess']); // Get the letter from the URL.
 
-        if(in_array($guess_letter, $correctQuoteArray)){ // If the letter is a correct guess, update 'test' array.
-            updateArray($guess_letter, $correctQuoteArray);
+        if(in_array($guess_letter, $_SESSION["quote"])){ // If the letter is a correct guess, update 'test' array.
+            updateArray($guess_letter);
         }
         else {
             $_SESSION["guesses"] = $_SESSION["guesses"] + 1; // If the letter is incorrect, add one to guesses.
@@ -56,11 +55,20 @@ function validateInputs($correctQuote)
     }
 }
 
+// Use wpapi to break quote into base characters
+function getBaseChars($quote) {
+    $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getBaseCharacters.php?input1='.$quote.'&input2=English');
+    $santitizeData = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data);
+    $decodedData = json_decode($santitizeData);
+    return $decodedData->data;
+}
+
+
 //Updates session array for instance of the guess letter
-function updateArray($letter, $array)
+function updateArray($letter)
 {
-    for ($index = 0; $index < count($array); $index++ ) {
-        if (strcmp($letter, $array[$index]) == 0) {
+    for ($index = 0; $index < count($_SESSION["quote"]); $index++ ) {
+        if (strcmp($letter, $_SESSION["quote"][$index]) == 0) {
             $_SESSION["test"][$index] = strtoupper($letter);
         }
 
@@ -68,9 +76,9 @@ function updateArray($letter, $array)
 }
 
 // Calls validateInput and then sets the hangman image.
-function setState($correctQuote)
+function setState()
 {
-    validateInputs($correctQuote);
+    validateInputs();
 
     switch ($_SESSION["guesses"]) { // Checks how many bad guesses have been made and sets the image.
         case 0:
@@ -100,6 +108,7 @@ function setState($correctQuote)
 // Resets the session variables.
 function resetGame()
 {
+    $_SESSION["quote"] = getBaseChars("basketball");
     $_SESSION["test"] = array("_", "_", "_", "_", "_", "_", "_", "_", "_", "_");
     $_SESSION["guesses"] = 0;
 }
@@ -127,7 +136,7 @@ function resetGame()
         <div class="hangman-container">
 
             <div>
-                <img src="<?php setState($correctQuote)?>" alt="Hangman full">
+                <img src="<?php setState()?>" alt="Hangman full">
             </div>
 
         </div>
@@ -137,7 +146,6 @@ function resetGame()
            
 
             <?php
-
 
             createInputs($correctQuote);
 
