@@ -1,12 +1,16 @@
 <?php
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+session_start();
 
 const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman");
 
-// $correctQuote = quotes[array_rand(quotes)]; // gets random key and then searches for the value fo that key in the array_rand
-$correctQuote = "hungry";
+$correctQuote = "basketball";
 
+if(empty($_SESSION["test"])){
+    resetGame();
+}
 
+// Creates HTML for the buttons.
 function createButtons()
 {
     $length = strlen(letters);
@@ -22,31 +26,11 @@ function createButtons()
     }
 }
 
+// Creates HTML for the inputs.
 function createInputs($correctQuote)
 {
-    $length = strlen($correctQuote);
-    $correctQuoteArray = str_split($correctQuote); // 
-    $visibility = "hidden";
-
-    for ($i = 0; $i < $length; $i++) {
-        // this is so we have about 4 inputs max in each line
-        $input = validateInputs($correctQuote);
-      //  echo "the index is " .in_array("u", $correctQuoteArray);
-      $index = array_search(strtolower($input ), $correctQuoteArray);
-      echo $index;
-      //  echo "index is " .$index;
-        if($input != null && $i == $index){
-          
-
-            // echo "<br>";
-            $visibility = "visible";
-              echo "<span><span style='visibility:$visibility'>" . "&nbsp;&nbsp" .$input . "</span></span>";
-
-        }
-        else{
-            $visibility = "hidden";
-             echo "<span><span style='visibility:$visibility'>" . "&nbsp;&nbsp" .$correctQuoteArray[$i] . "</span></span>";
-        }
+    for ($i = 0; $i < strlen($correctQuote); $i++) {
+        echo "<span>" . "&nbsp;&nbsp" .$_SESSION["test"][$i] . "</span>";
      }
 }
 
@@ -55,35 +39,70 @@ function getCurrentQuote()
 }
 
 
-
+// Updates the 'test' array and guesses.
 function validateInputs($correctQuote)
 {
     $correctQuoteArray = str_split($correctQuote);
-    if(isset($_GET['letter-guess'])){
-    $guess_letter = $_GET['letter-guess'];
- 
+    if(isset($_GET['letter-guess'])){ // If letter guess is set.
 
-   // echo "guess letter is " . $guess_letter;
- 
+        $guess_letter = strtolower($_GET['letter-guess']); // Get the letter from the URL.
 
-    if(in_array(strtolower($guess_letter), $correctQuoteArray)){
-     $index = array_search(strtolower($guess_letter), $correctQuoteArray);
-     return $guess_letter;
-     }
-     else{
-        return null;
-     }
-    
+        if(in_array($guess_letter, $correctQuoteArray)){ // If the letter is a correct guess, update 'test' array.
+            updateArray($guess_letter, $correctQuoteArray);
+        }
+        else {
+            $_SESSION["guesses"] = $_SESSION["guesses"] + 1; // If the letter is incorrect, add one to guesses.
+        }
+    }
+}
+
+//Updates session array for instance of the guess letter
+function updateArray($letter, $array)
+{
+    for ($index = 0; $index < count($array); $index++ ) {
+        if (strcmp($letter, $array[$index]) == 0) {
+            $_SESSION["test"][$index] = strtoupper($letter);
+        }
 
     }
 }
 
+// Calls validateInput and then sets the hangman image.
+function setState($correctQuote)
+{
+    validateInputs($correctQuote);
 
+    switch ($_SESSION["guesses"]) { // Checks how many bad guesses have been made and sets the image.
+        case 0:
+            echo "./css/images/gallow0.png";
+            break;
+        case 1:
+            echo "./css/images/gallow1.png";
+            break;
+        case 2:
+            echo "./css/images/gallow2.png";
+            break;
+        case 3:
+            echo "./css/images/gallow3.png";
+            break;
+        case 4:
+            echo "./css/images/gallow4.png";
+            break;
+        case 5:
+            echo "./css/images/gallow5.png";
+            break;
+        default:
+            echo "./css/images/gallow6.png";
+            break;
+    }
+}
 
-    // get input from keyboard and check against the array
-
-
- 
+// Resets the session variables.
+function resetGame()
+{
+    $_SESSION["test"] = array("_", "_", "_", "_", "_", "_", "_", "_", "_", "_");
+    $_SESSION["guesses"] = 0;
+}
 
 ?>
 
@@ -95,7 +114,7 @@ function validateInputs($correctQuote)
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hangman Game</title>
-    <link rel="stylesheet" href="./css/hangman_style.css" />
+    <link rel="stylesheet" href="./css/hangman_style.css"/>
 </head>
 
 <body>
@@ -108,10 +127,8 @@ function validateInputs($correctQuote)
         <div class="hangman-container">
 
             <div>
-                <img src="./css/images/hangman- full.png" alt="Hangman full">
+                <img src="<?php setState($correctQuote)?>" alt="Hangman full">
             </div>
-
-            <div>You Lose, try again laters</div>
 
         </div>
 
