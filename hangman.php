@@ -1,7 +1,6 @@
 <?php
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 session_start();
-
 const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman");
 
 $correctQuote = "basketball";
@@ -13,25 +12,38 @@ if(empty($_SESSION["test"])){
 // Creates HTML for the buttons.
 function createButtons()
 {
-    $length = strlen(letters);
 
-    for ($i = 0; $i < $length; $i++) {
-        // this so to not put all letters in one line
-        if ($i == 13) {
-            echo "<br>";
-            echo "<button type='submit' name='letter-guess' value='" . letters[$i] . "'>" . letters[$i] . "</button>";
-        } else {
-            echo "<button type='submit' name='letter-guess' value='" . letters[$i] . "'>" . letters[$i] . "</button>";
-        }
-    }
+    echo "<label for='single-char-input'>Enter Letter </label>";
+    echo "<input type='text' name='letter-guess' id='single-char-input'>";
+    echo "<input type='submit' value='Submit'>";
+
+    echo "<br>";
+    echo "<label for='single-char-input'>Guess the Phrase </label>";
+    echo "<input type='text' name='phrase-guess' id='phrase-input'>";
+
+    echo "<input type='submit' value='Submit'>";    
 }
 
 // Creates HTML for the inputs.
 function createInputs($correctQuote)
 {
+    echo "<ul>";
     for ($i = 0; $i < strlen($correctQuote); $i++) {
-        echo "<span>" . "&nbsp;&nbsp" .$_SESSION["test"][$i] . "</span>";
+        #echo "<span>" . "&nbsp;&nbsp" .$_SESSION["test"][$i] . "</span>";
+
+        # if the letter is in the word and has been guessed create a list item
+        # with the class to turn the tile green
+        if ($_SESSION["test"][$i] != "_") {
+            echo "<li class='correctLetter'> ".$_SESSION["test"][$i]."</li>";
+        }
+        # else create list item with no class name
+        else {
+            echo "<li>".$_SESSION["test"][$i]."</li>";
+
+        }
      }
+     
+    echo "</ul>";
 }
 
 function getCurrentQuote()
@@ -174,8 +186,23 @@ function resetGame()
 
         </div>
 
+        <!--- THIS IS TEMPORARY, USED TO RESET SESSION */ --->
+        <form method="post">
+            <input type="submit" name="button1"
+                    value="reset session"/>
+        </form>
+
+        <?php
+               if(isset($_POST['button1'])) {
+                resetGame();
+                header("Refresh:0; url=hangman.php");
+            
+            }
+        ?>
+        <!--- end of temporary section --->
 
     </div>
+
 
 </body>
 
