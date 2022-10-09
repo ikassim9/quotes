@@ -3,10 +3,10 @@ define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 session_start();
 const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman");
 
-$correctQuote = "basketball";
+$correctQuote = strtolower(quotes[3]);
 
 if(empty($_SESSION["test"])){
-    resetGame();
+    resetGame($correctQuote);
 }
 
 // Creates HTML for the buttons.
@@ -118,9 +118,9 @@ function setState()
 }
 
 // Resets the session variables.
-function resetGame()
+function resetGame($correctQuote)
 {
-    $_SESSION["quote"] = getBaseChars("basketball");
+    $_SESSION["quote"] = getBaseChars($correctQuote);
     $_SESSION["test"] = array("_", "_", "_", "_", "_", "_", "_", "_", "_", "_");
     $_SESSION["guesses"] = 0;
 }
@@ -194,7 +194,7 @@ function resetGame()
 
         <?php
                if(isset($_POST['button1'])) {
-                resetGame();
+                resetGame($correctQuote);
                 header("Refresh:0; url=hangman.php");
             
             }
