@@ -38,6 +38,10 @@ span {
     background-color: lightgreen;
 }
 
+.baseCharMatch{
+    background-color: red;
+}
+
 li {
     display: inline-block;
     width: 50px;
