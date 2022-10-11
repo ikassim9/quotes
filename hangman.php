@@ -1,10 +1,10 @@
 <?php
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 session_start();
-const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman");
+const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క");
 
  
-$correctQuote = strtolower(quotes[2]);
+$correctQuote = strtolower(quotes[5]);
 
 echo $correctQuote;
 if (empty($_SESSION["test"])) {
@@ -16,7 +16,7 @@ function createButtons()
 {
 
     echo "<label for='single-char-input'>Enter Letter </label>";
-    echo "<input type='text' name='letter-guess' id='single-char-input'>";
+    echo "<input type='text' name='letter-guess' id='single-char-input' maxlength ='1'>";
     echo "<input type='submit' value='Submit'>";
 
     echo "<br>";
@@ -76,28 +76,28 @@ function validateInputs()
     }
 }
 
-// Use wpapi to break quote into base characters
+// Use wpapi api to get base characters
 function getBaseChars($quote)
 {
     $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getBaseCharacters.php?input1=' . $quote . '&input2=English');
-    $santitizeData = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data);
+    $santitizeData = substr($data, 6);
     $decodedData = json_decode($santitizeData);
     var_dump($decodedData->data);
     echo "<br>";
     return $decodedData->data;
 }
 
-
+// Use wpapi api to get logical characters
 function getLogicalChars($quote)
 {
-    $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getLogicalChars.php?input1=' . $quote . '&input2=English');
-    $santitizeData = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data);
+    $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getLogicalChars.php?string=' . $quote . '&language=English');
+    $santitizeData = substr($data, 6);
     $decodedData = json_decode($santitizeData);
-    $decodedData->data[0]= "f"; // remove this
     var_dump($decodedData->data);
     return $decodedData->data;
 }
 
+// Use wpapi api to get the length of string
 function getLength($quote)
 {
     $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getLength.php?input1=' . $quote . '&input2=English');
